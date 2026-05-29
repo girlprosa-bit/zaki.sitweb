@@ -1,0 +1,2436 @@
+﻿<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AgencyOS - منصة إدارة الوكالات</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --panel-2: #eef3f7;
+      --text: #152033;
+      --muted: #667085;
+      --line: #d9e0e8;
+      --blue: #2563eb;
+      --green: #0f9f6e;
+      --amber: #c47c10;
+      --red: #d64545;
+      --ink: #111827;
+      --cyan: #0891b2;
+      --violet: #7c3aed;
+      --shadow: 0 18px 45px rgba(31, 41, 55, .09);
+      --radius: 8px;
+      font-family: Inter, "Segoe UI", Tahoma, Arial, ui-sans-serif, system-ui, sans-serif;
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #111318;
+      --panel: #181c23;
+      --panel-2: #202633;
+      --text: #eef2f7;
+      --muted: #a7b0bf;
+      --line: #303847;
+      --blue: #5b8cff;
+      --green: #32c994;
+      --amber: #f2ad3e;
+      --red: #ff6b6b;
+      --ink: #f7fafc;
+      --cyan: #4fc3dc;
+      --violet: #a78bfa;
+      --shadow: 0 18px 45px rgba(0, 0, 0, .28);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 18px;
+      border-inline-end: 1px solid var(--line);
+      background: var(--panel);
+      overflow: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      color: #fff;
+      background: linear-gradient(135deg, #2563eb, #0f9f6e);
+      font-weight: 800;
+    }
+
+    .brand strong { display: block; font-size: 16px; }
+    .brand span { color: var(--muted); font-size: 12px; }
+
+    .nav {
+      display: grid;
+      gap: 7px;
+    }
+
+    .nav button,
+    .icon-btn,
+    .primary,
+    .ghost,
+    .chip,
+    .segmented button {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text);
+      transition: transform .16s ease, background .16s ease, border-color .16s ease;
+    }
+
+    .nav button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 12px;
+      text-align: start;
+      border-color: transparent;
+    }
+
+    .nav button:hover,
+    .nav button.active,
+    .icon-btn:hover,
+    .ghost:hover,
+    .chip:hover {
+      background: var(--panel-2);
+      border-color: var(--line);
+    }
+
+    .nav .glyph {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      background: var(--panel-2);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .side-section {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .side-section h3 {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .member {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+      font-size: 13px;
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--ink);
+      font-size: 11px;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    main {
+      min-width: 0;
+      padding: 18px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: -18px -18px 18px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(14px);
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: min(520px, 45vw);
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .search input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      background: var(--panel);
+      font-weight: 800;
+    }
+
+    .primary,
+    .ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 14px;
+      background: var(--panel);
+      font-weight: 700;
+    }
+
+    .primary {
+      color: #fff;
+      border-color: var(--blue);
+      background: var(--blue);
+    }
+
+    .ghost {
+      border-color: transparent;
+    }
+
+    .page {
+      display: none;
+      animation: rise .22s ease both;
+    }
+
+    .page.active { display: block; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 0 16px;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 5px; font-size: clamp(24px, 3vw, 34px); letter-spacing: 0; }
+    h2 { margin-bottom: 12px; font-size: 19px; }
+    h3 { margin-bottom: 8px; font-size: 15px; }
+    p { color: var(--muted); line-height: 1.5; }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .two { grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr); align-items: start; }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); box-shadow: var(--shadow); }
+    .pad { padding: 16px; }
+    .mt-14 { margin-top: 14px; }
+
+    .metric { min-height: 116px; padding: 15px; }
+    .metric span { color: var(--muted); font-size: 13px; }
+    .metric strong { display: block; margin: 10px 0 6px; font-size: 30px; letter-spacing: 0; }
+    .trend { font-size: 13px; font-weight: 800; }
+    .good { color: var(--green); }
+    .warn { color: var(--amber); }
+    .bad { color: var(--red); }
+
+    .chart {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
+      align-items: end;
+      min-height: 220px;
+      padding-top: 18px;
+    }
+
+    .bar {
+      min-height: 34px;
+      border-radius: 6px 6px 2px 2px;
+      background: linear-gradient(180deg, var(--cyan), var(--blue));
+      position: relative;
+    }
+
+    .bar span {
+      position: absolute;
+      bottom: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .activity,
+    .notifications { display: grid; gap: 10px; }
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .row:last-child { border-bottom: 0; }
+    .row small,
+    .muted { color: var(--muted); }
+
+    .kanban-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .segmented {
+      display: flex;
+      gap: 6px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .segmented button {
+      min-height: 32px;
+      padding: 0 10px;
+      border-color: transparent;
+      font-size: 13px;
+    }
+
+    .segmented button.active { color: #fff; background: var(--ink); }
+
+    .board {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(260px, 290px);
+      gap: 12px;
+      overflow-x: auto;
+      padding: 2px 2px 16px;
+      min-height: 570px;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 530px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+    }
+
+    .column header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 2px 2px 6px;
+      cursor: grab;
+    }
+
+    .count {
+      min-width: 26px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .task {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 10px 22px rgba(31, 41, 55, .07);
+    }
+
+    .task[draggable="true"] { cursor: grab; }
+    .task.dragging { opacity: .55; transform: rotate(1deg); }
+    .column.over { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0;
+    }
+
+    .tag,
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      color: var(--text);
+    }
+
+    .tag.blue { color: var(--blue); }
+    .tag.green { color: var(--green); }
+    .tag.amber { color: var(--amber); }
+    .tag.red { color: var(--red); }
+
+    .task-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--panel-2);
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 13px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .day {
+      min-height: 96px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .day strong { font-size: 13px; }
+
+    .meeting {
+      margin-top: 8px;
+      padding: 7px;
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--blue) 13%, transparent);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .files {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .file-preview {
+      height: 120px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 34px;
+      font-weight: 900;
+    }
+
+    .file-preview.psd { background: linear-gradient(135deg, #0f9f6e, #0891b2); }
+    .file-preview.pdf { background: linear-gradient(135deg, #7c3aed, #2563eb); }
+    .file-preview.mp4 { background: linear-gradient(135deg, #c47c10, #d64545); }
+    .file-preview.png { background: linear-gradient(135deg, #111827, #0891b2); }
+
+    .automation { display: grid; gap: 10px; }
+
+    .rule {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .toggle {
+      width: 44px;
+      height: 24px;
+      padding: 3px;
+      border-radius: 999px;
+      background: var(--line);
+    }
+
+    .toggle span {
+      display: block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform .18s ease;
+    }
+
+    .toggle.on { background: var(--green); }
+    .toggle.on span { transform: translateX(20px); }
+
+    .ai-box { display: grid; gap: 12px; }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--text);
+      outline: 0;
+    }
+
+    .output {
+      min-height: 126px;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .architecture {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    code {
+      display: block;
+      white-space: pre-wrap;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #10151f;
+      color: #d9f99d;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .toast {
+      position: fixed;
+      inset-inline-end: 18px;
+      bottom: 18px;
+      z-index: 20;
+      width: min(360px, calc(100vw - 36px));
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      transform: translateY(120%);
+      transition: transform .25s ease;
+    }
+
+    .toast.show { transform: translateY(0); }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: var(--muted); font-size: 12px; font-weight: 800; }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 40px;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--text);
+      outline: 0;
+    }
+
+    .deal-log,
+    .message-list {
+      display: grid;
+      gap: 10px;
+      max-height: 340px;
+      overflow: auto;
+    }
+
+    .team-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .admin-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .admin-card.active {
+      border-color: var(--blue);
+      background: color-mix(in srgb, var(--blue) 9%, var(--panel));
+    }
+
+    .inline-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mini-btn {
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .summary-item {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+    }
+
+    .summary-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .log-item,
+    .message {
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+    }
+
+    .message.client { border-inline-start: 4px solid var(--blue); }
+    .message.manager { border-inline-start: 4px solid var(--green); }
+    .message strong,
+    .log-item strong { display: block; margin-bottom: 4px; }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(17, 24, 39, .48);
+    }
+
+    .modal.show { display: grid; }
+
+    .modal-panel {
+      width: min(760px, 100%);
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .modal-head,
+    .modal-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-actions {
+      justify-content: flex-end;
+      border-top: 1px solid var(--line);
+      border-bottom: 0;
+    }
+
+    .modal-body { padding: 16px; }
+
+    .auth-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: var(--bg);
+    }
+
+    .auth-screen.hidden { display: none; }
+
+    .auth-panel {
+      width: min(760px, 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .auth-head {
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-2);
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding: 14px;
+    }
+
+    .auth-tab {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .auth-tab.active {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .auth-form { display: none; padding: 16px; }
+    .auth-form.active { display: grid; }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel-2);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .client-only,
+    .admin-only { }
+
+    body[data-role="client"] .admin-only { display: none !important; }
+    body[data-role="admin"] .client-limited { display: none !important; }
+
+    @media (max-width: 1080px) {
+      .app { grid-template-columns: 82px minmax(0, 1fr); }
+      .brand div:not(.mark), .nav span:not(.glyph), .side-section { display: none; }
+      .sidebar { padding: 14px; }
+      .nav button { justify-content: center; }
+      .metrics, .three, .files, .architecture { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .two { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .app { display: block; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand div:not(.mark), .nav span:not(.glyph) { display: block; }
+      .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .nav button { justify-content: flex-start; }
+      .topbar { position: static; flex-wrap: wrap; }
+      .search { width: 100%; order: 2; }
+      .metrics, .three, .files, .architecture, .form-grid { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .admin-card { grid-template-columns: auto 1fr; }
+      .admin-card .inline-actions { grid-column: 1 / -1; }
+      .heading, .kanban-toolbar { align-items: stretch; flex-direction: column; }
+      .calendar { grid-template-columns: repeat(2, 1fr); }
+      th:nth-child(4), td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="auth-screen" id="authScreen">
+    <div class="auth-panel">
+      <div class="auth-head">
+        <h1>الدخول إلى AgencyOS</h1>
+        <p>المسؤول يدخل بكود إذن خاص منك. الزبون يدخل كمستخدم عادي لمتابعة العمل وطلب موعد أو مهمة عامة فقط.</p>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-auth-tab="admin" type="button">دخول المسؤول</button>
+        <button class="auth-tab" data-auth-tab="client" type="button">دخول الزبون</button>
+      </div>
+      <form class="auth-form form-grid active" id="adminLoginForm">
+        <div class="field">
+          <label for="loginAdmin">اختر المسؤول</label>
+          <select id="loginAdmin"></select>
+        </div>
+        <div class="field">
+          <label for="adminInviteCode">كود الإذن</label>
+          <input id="adminInviteCode" required placeholder="OWNER-2026">
+        </div>
+        <div class="field full">
+          <button class="primary" type="submit">دخول لوحة الإدارة</button>
+        </div>
+      </form>
+      <form class="auth-form form-grid" id="clientLoginForm">
+        <div class="field">
+          <label for="clientLoginName">اسم الزبون</label>
+          <input id="clientLoginName" required placeholder="اسمك أو اسم الشركة">
+        </div>
+        <div class="field">
+          <label for="clientLoginCompany">الشركة</label>
+          <input id="clientLoginCompany" placeholder="اختياري">
+        </div>
+        <div class="field full">
+          <button class="primary" type="submit">دخول بوابة الزبون</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <div class="app" id="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">A</div>
+        <div>
+          <strong>AgencyOS</strong>
+          <span data-i18n="brandSubtitle">منصة إدارة الوكالات</span>
+        </div>
+      </div>
+      <nav class="nav" id="nav">
+        <button class="active admin-only" data-page="dashboard"><span class="glyph">DB</span><span data-i18n="navDashboard">لوحة التحكم</span></button>
+        <button class="admin-only" data-page="kanban"><span class="glyph">KB</span><span data-i18n="navKanban">سير العمل</span></button>
+        <button class="admin-only" data-page="projects"><span class="glyph">PM</span><span data-i18n="navProjects">المشاريع</span></button>
+        <button class="admin-only" data-page="crm"><span class="glyph">CRM</span><span data-i18n="navCrm">العملاء والصفقات</span></button>
+        <button class="admin-only" data-page="admins"><span class="glyph">AD</span><span data-i18n="navAdmins">المسؤولون</span></button>
+        <button class="admin-only" data-page="calendar"><span class="glyph">CL</span><span data-i18n="navCalendar">المواعيد</span></button>
+        <button class="admin-only" data-page="files"><span class="glyph">FM</span><span data-i18n="navFiles">الملفات</span></button>
+        <button data-page="client"><span class="glyph">CP</span><span data-i18n="navClient">بوابة الزبون</span></button>
+        <button class="admin-only" data-page="automation"><span class="glyph">AU</span><span data-i18n="navAutomation">الأتمتة</span></button>
+        <button class="admin-only" data-page="ai"><span class="glyph">AI</span><span data-i18n="navAi">المساعد الذكي</span></button>
+        <button class="admin-only" data-page="architecture"><span class="glyph">AR</span><span data-i18n="navArchitecture">البنية التقنية</span></button>
+      </nav>
+      <section class="side-section">
+        <h3 data-i18n="onlineTeam">الفريق المتصل</h3>
+        <div id="sidebarTeam"></div>
+      </section>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <label class="search">
+          <strong>/</strong>
+          <input id="search" type="search" placeholder="ابحث في المشاريع والعملاء والملفات والمهام" data-i18n-placeholder="searchPlaceholder">
+        </label>
+        <div class="actions">
+          <button class="icon-btn" title="Notifications" id="notifyBtn">N</button>
+          <button class="icon-btn" title="Toggle theme" id="themeBtn">T</button>
+          <button class="ghost" id="langBtn" type="button">EN</button>
+          <span class="role-badge" id="roleBadge">غير مسجل</span>
+          <button class="ghost" id="logoutBtn" type="button">خروج</button>
+          <button class="primary admin-only" id="newProjectBtn" data-i18n="newProject">+ مشروع جديد</button>
+        </div>
+      </header>
+
+      <section class="page active" id="dashboard">
+        <div class="heading">
+          <div>
+            <h1>مركز قيادة الوكالة</h1>
+            <p>تابع العملاء المحتملين، الحملات النشطة، صحة الفريق، الاعتمادات، ومخاطر التسليم من شاشة واحدة.</p>
+          </div>
+          <button class="ghost" id="exportReportBtn" type="button">تصدير التقرير</button>
+        </div>
+        <div class="grid metrics">
+          <div class="card metric"><span>مشاريع نشطة</span><strong>24</strong><div class="trend good">+18% هذا الشهر</div></div>
+          <div class="card metric"><span>مشاريع متأخرة</span><strong>3</strong><div class="trend warn">2 تحتاج مراجعة</div></div>
+          <div class="card metric"><span>إنتاجية الفريق</span><strong>87%</strong><div class="trend good">12 مهمة أغلقت اليوم</div></div>
+          <div class="card metric"><span>قيمة الصفقات</span><strong>$184k</strong><div class="trend good">6 عروض مفتوحة</div></div>
+        </div>
+        <div class="grid two mt-14">
+          <div class="card pad">
+            <h2>سرعة التسليم الأسبوعية</h2>
+            <div class="chart">
+              <div class="bar" style="height:58%"><span>Mon</span></div>
+              <div class="bar" style="height:73%"><span>Tue</span></div>
+              <div class="bar" style="height:45%"><span>Wed</span></div>
+              <div class="bar" style="height:82%"><span>Thu</span></div>
+              <div class="bar" style="height:66%"><span>Fri</span></div>
+              <div class="bar" style="height:38%"><span>Sat</span></div>
+              <div class="bar" style="height:52%"><span>Sun</span></div>
+            </div>
+          </div>
+          <div class="card pad">
+            <h2>تنبيهات ذكية</h2>
+            <div class="notifications">
+              <div class="row"><span>Brand kit approved by WaveBank</span><small>4m</small></div>
+              <div class="row"><span>Three tasks due in Strategy</span><small>22m</small></div>
+              <div class="row"><span>@Dami mentioned you in Design</span><small>1h</small></div>
+              <div class="row"><span>Q3 report export is ready</span><small>2h</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid three mt-14">
+          <div class="card pad">
+            <h2>المواعيد القادمة</h2>
+            <div class="row"><span>FitLab kickoff</span><small>10:30</small></div>
+            <div class="row"><span>Client review</span><small>13:00</small></div>
+            <div class="row"><span>Media planning</span><small>15:45</small></div>
+          </div>
+          <div class="card pad">
+            <h2>آخر النشاطات</h2>
+            <div class="activity">
+              <div class="row"><span>Strategy brief updated</span><small>Ada</small></div>
+              <div class="row"><span>Video draft uploaded</span><small>Lena</small></div>
+              <div class="row"><span>Budget changed</span><small>Admin</small></div>
+            </div>
+          </div>
+          <div class="card pad">
+            <h2>رادار المخاطر</h2>
+            <p>يتوقع النظام تأخر حملتين لأن اعتماد التصاميم يأخذ وقتًا أطول من المخطط.</p>
+            <button class="primary" id="openRisksBtn" type="button">فتح المخاطر</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="kanban">
+        <div class="heading">
+          <div>
+            <h1>لوحة سير العمل</h1>
+            <p>انقل الحملات من عميل محتمل إلى التسليم النهائي مع تعاون مباشر ومراحل مخصصة.</p>
+          </div>
+        </div>
+        <div class="kanban-toolbar">
+          <div class="segmented">
+            <button class="active" type="button">All</button><button type="button">Mine</button><button type="button">Delayed</button><button type="button">Client review</button>
+          </div>
+          <div class="actions"><button class="ghost" id="addColumn" type="button">+ Column</button><button class="primary" id="addCard" type="button">+ Card</button></div>
+        </div>
+        <div class="board" id="board"></div>
+      </section>
+
+      <section class="page" id="projects">
+        <div class="heading">
+          <div>
+            <h1>المشاريع والمهام</h1>
+            <p>تخطيط العمل مع الأولويات، المسؤولين، تتبع الوقت، الملفات، السجلات، والتعليقات.</p>
+          </div>
+          <button class="primary" id="createTaskBtn" type="button">إنشاء مهمة</button>
+        </div>
+        <div class="card pad">
+          <table>
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Owner</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Due</th>
+                <th>Priority</th>
+              </tr>
+            </thead>
+            <tbody id="projectsTableBody">
+              <tr>
+                <td>WaveBank rebrand</td>
+                <td>Ada Malik</td>
+                <td><span class="tag blue">Design</span></td>
+                <td><div class="progress"><span style="width:72%"></span></div></td>
+                <td>Jun 08</td>
+                <td><span class="tag red">High</span></td>
+              </tr>
+              <tr>
+                <td>FitLab launch</td>
+                <td>Dami King</td>
+                <td><span class="tag green">Campaign Launch</span></td>
+                <td><div class="progress"><span style="width:84%"></span></div></td>
+                <td>Jun 12</td>
+                <td><span class="tag amber">Medium</span></td>
+              </tr>
+              <tr>
+                <td>NovaBites content engine</td>
+                <td>Lena Stone</td>
+                <td><span class="tag amber">Content Creation</span></td>
+                <td><div class="progress"><span style="width:51%"></span></div></td>
+                <td>Jun 19</td>
+                <td><span class="tag blue">Normal</span></td>
+              </tr>
+              <tr>
+                <td>Orbit Telecom funnel</td>
+                <td>Ada Malik</td>
+                <td><span class="tag blue">Strategy</span></td>
+                <td><div class="progress"><span style="width:38%"></span></div></td>
+                <td>Jun 24</td>
+                <td><span class="tag red">High</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="page" id="crm">
+        <div class="heading">
+          <div>
+            <h1>إدارة العملاء والصفقات</h1>
+            <p>أدر العملاء المحتملين والميزانيات وتاريخ الاجتماعات والملاحظات وحركة الصفقة من مهتم إلى رابح أو خاسر.</p>
+          </div>
+          <button class="primary" id="addClientBtn" type="button">إضافة زبون</button>
+        </div>
+        <div class="grid two">
+          <div class="card pad">
+            <h2>مسار الصفقات</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Industry</th>
+                  <th>Budget</th>
+                  <th>Stage</th>
+                </tr>
+              </thead>
+              <tbody id="pipelineBody">
+                <tr>
+                  <td>WaveBank</td>
+                  <td>Finance</td>
+                  <td>$42k</td>
+                  <td><span class="tag green">Won</span></td>
+                </tr>
+                <tr>
+                  <td>FitLab</td>
+                  <td>Fitness</td>
+                  <td>$28k</td>
+                  <td><span class="tag amber">Negotiation</span></td>
+                </tr>
+                <tr>
+                  <td>Orbit Telecom</td>
+                  <td>Telecom</td>
+                  <td>$64k</td>
+                  <td><span class="tag blue">Proposal Sent</span></td>
+                </tr>
+                <tr>
+                  <td>NovaBites</td>
+                  <td>Food</td>
+                  <td>$19k</td>
+                  <td><span class="tag blue">Interested</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card pad">
+            <h2>ملف الزبون</h2>
+            <div id="clientProfile"></div>
+          </div>
+        </div>
+        <div class="card pad mt-14">
+          <h2>تسجيل زبون جديد بواسطة المسؤول</h2>
+          <form class="form-grid" id="clientForm">
+            <div class="field">
+              <label for="clientCompany">اسم الزبون/الشركة</label>
+              <input id="clientCompany" required placeholder="اسم الشركة">
+            </div>
+            <div class="field">
+              <label for="clientIndustry">المجال</label>
+              <input id="clientIndustry" required placeholder="تجارة، صحة، تعليم...">
+            </div>
+            <div class="field">
+              <label for="clientBudget">الميزانية</label>
+              <input id="clientBudget" placeholder="$10k">
+            </div>
+            <div class="field">
+              <label for="clientStage">مرحلة الصفقة</label>
+              <select id="clientStage">
+                <option>Lead</option>
+                <option>Interested</option>
+                <option>Proposal Sent</option>
+                <option>Negotiation</option>
+                <option>Won</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="clientEmail">البريد</label>
+              <input id="clientEmail" type="email" placeholder="client@example.com">
+            </div>
+            <div class="field">
+              <label for="clientPhone">الهاتف</label>
+              <input id="clientPhone" placeholder="+1 000 000 0000">
+            </div>
+            <div class="field full">
+              <button class="primary" type="submit">حفظ الزبون وإتاحته للمسؤولين</button>
+            </div>
+          </form>
+        </div>
+        <div class="grid two mt-14">
+          <div class="card pad">
+            <h2>سجل الصفقة</h2>
+            <div class="deal-log" id="dealLog"></div>
+          </div>
+          <div class="card pad">
+            <h2>تسجيل مكالمة أو اتفاق</h2>
+            <form class="form-grid" id="dealForm">
+              <div class="field">
+                <label for="dealClient">الزبون</label>
+                <select id="dealClient" required></select>
+              </div>
+              <div class="field">
+                <label for="dealTime">وقت الكلام</label>
+                <input id="dealTime" type="datetime-local" required>
+              </div>
+              <div class="field">
+                <label for="dealAmount">قيمة الصفقة</label>
+                <input id="dealAmount" type="text" placeholder="$12k">
+              </div>
+              <div class="field">
+                <label for="dealStage">مرحلة الصفقة</label>
+                <select id="dealStage">
+                  <option>Lead</option>
+                  <option>Interested</option>
+                  <option>Proposal Sent</option>
+                  <option>Negotiation</option>
+                  <option>Won</option>
+                  <option>Lost</option>
+                </select>
+              </div>
+              <div class="field full">
+                <label for="dealNotes">تفاصيل الكلام والاتفاق</label>
+                <textarea id="dealNotes" placeholder="اكتب ما تم الاتفاق عليه، الاعتراضات، والخطوة القادمة" required></textarea>
+              </div>
+              <div class="field full">
+                <button class="primary" type="submit">حفظ تفاصيل الصفقة</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="admins">
+        <div class="heading">
+          <div>
+            <h1>إدارة المسؤولين</h1>
+            <p>أنت المسؤول الرئيسي. من هنا تضيف المسؤولين، تعدل الاسم والعمل، وتحدد من يستلم كل زبون أو مشروع.</p>
+          </div>
+          <button class="primary" id="resetAdminForm" type="button">مسؤول جديد</button>
+        </div>
+        <div class="summary-grid mt-14">
+          <div class="summary-item"><span>المسؤول الحالي</span><strong id="activeAdminName">-</strong></div>
+          <div class="summary-item"><span>عدد المسؤولين</span><strong id="adminCount">0</strong></div>
+          <div class="summary-item"><span>المشاريع المسندة</span><strong id="assignedCount">0</strong></div>
+        </div>
+        <div class="grid two mt-14">
+          <div class="card pad">
+            <h2>قائمة المسؤولين</h2>
+            <div class="team-list" id="adminList"></div>
+          </div>
+          <div class="card pad">
+            <h2>تعديل بيانات المسؤول</h2>
+            <form class="form-grid" id="adminForm">
+              <input id="adminId" type="hidden">
+              <div class="field">
+                <label for="adminName">اسم المسؤول</label>
+                <input id="adminName" required placeholder="اسم المسؤول">
+              </div>
+              <div class="field">
+                <label for="adminRole">العمل/الدور</label>
+                <input id="adminRole" required placeholder="مدير مشروع">
+              </div>
+              <div class="field">
+                <label for="adminInitials">الرمز المختصر</label>
+                <input id="adminInitials" maxlength="3" required placeholder="AM">
+              </div>
+              <div class="field">
+                <label for="adminColor">لون المسؤول</label>
+                <input id="adminColor" type="color" value="#2563eb">
+              </div>
+              <div class="field full">
+                <label for="ownerInviteCode">كود إذن تسجيل المسؤولين</label>
+                <input id="ownerInviteCode" placeholder="OWNER-2026">
+              </div>
+              <div class="field full">
+                <label for="adminWork">تفاصيل العمل</label>
+                <textarea id="adminWork" placeholder="مثال: مسؤول عن الصفقات الجديدة، مواعيد العملاء، ومراجعة التسليم."></textarea>
+              </div>
+              <div class="field full inline-actions">
+                <button class="primary" type="submit">حفظ المسؤول</button>
+                <button class="ghost" id="setCurrentAdmin" type="button">جعله المسؤول الحالي</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="calendar">
+        <div class="heading">
+          <div>
+            <h1>المواعيد والتقويم</h1>
+            <p>جدول مكالمات الزبائن، التذكيرات، روابط الفيديو، ومواعيد المتابعة.</p>
+          </div>
+          <button class="primary" id="scheduleMeetingBtn" type="button">جدولة موعد</button>
+        </div>
+        <div class="calendar" id="calendarGrid">
+          <div class="day"><strong>Mon 1</strong><div class="meeting">Kickoff 10:30</div></div>
+          <div class="day"><strong>Tue 2</strong></div>
+          <div class="day"><strong>Wed 3</strong><div class="meeting">Review 13:00</div></div>
+          <div class="day"><strong>Thu 4</strong><div class="meeting">Planning 09:15</div></div>
+          <div class="day"><strong>Fri 5</strong><div class="meeting">Approve 16:00</div></div>
+          <div class="day"><strong>Sat 6</strong></div>
+          <div class="day"><strong>Sun 7</strong></div>
+        </div>
+      </section>
+
+      <section class="page" id="files">
+        <div class="heading">
+          <div>
+            <h1>File and media management</h1>
+            <p>Secure Cloudinary-ready asset library with previews, versions, folders, and upload activity.</p>
+          </div>
+          <button class="primary" id="uploadBtn" type="button">Upload files</button>
+        </div>
+        <div class="files">
+          <div class="card pad">
+            <div class="file-preview psd">PSD</div>
+            <h3>Hero concept v3</h3>
+            <p>Design file. 42 MB. Version 3.</p>
+          </div>
+          <div class="card pad">
+            <div class="file-preview pdf">PDF</div>
+            <h3>Strategy deck</h3>
+            <p>Client approved. Export locked.</p>
+          </div>
+          <div class="card pad">
+            <div class="file-preview mp4">MP4</div>
+            <h3>Launch teaser</h3>
+            <p>Video preview. 1080p.</p>
+          </div>
+          <div class="card pad">
+            <div class="file-preview png">PNG</div>
+            <h3>Social kit</h3>
+            <p>36 deliverables in folder.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="client">
+        <div class="heading">
+          <div>
+            <h1>بوابة الزبون</h1>
+            <p>لوحة مركزة للزبون من أجل الاعتمادات، التعليقات، تقدم العمل، وتحميل التسليمات.</p>
+          </div>
+          <button class="ghost admin-only" id="sharePortalBtn" type="button">مشاركة البوابة</button>
+        </div>
+        <div class="grid two">
+          <div class="card pad">
+            <h2>إعادة هوية WaveBank</h2>
+            <p>المرحلة الحالية: مراجعة. يستطيع الزبون اعتماد الاتجاهات الإبداعية والتعليق على الملفات وتحميل الأصول النهائية.</p>
+            <div class="progress"><span style="width:76%"></span></div>
+            <button class="primary mt-14 admin-only" id="approveBtn" type="button">اعتماد التصميم</button>
+          </div>
+          <div class="card pad">
+            <h2>محادثة الزبون والمتحكم</h2>
+            <div class="message-list" id="messageList"></div>
+            <form class="form-grid mt-14" id="messageForm">
+              <div class="field">
+                <label for="messageRole">المرسل</label>
+                <select id="messageRole">
+                  <option value="client">الزبون</option>
+                  <option class="admin-only" value="manager">المسؤول</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="messageTime">وقت الرسالة</label>
+                <input id="messageTime" type="datetime-local" required>
+              </div>
+              <div class="field full">
+                <label for="messageText">نص الرسالة</label>
+                <textarea id="messageText" placeholder="اكتب الرد أو الملاحظة" required></textarea>
+              </div>
+              <div class="field full">
+                <button class="primary" type="submit">إرسال وحفظ</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="grid two mt-14">
+          <div class="card pad">
+            <h2>طلب عام من الزبون</h2>
+            <form class="form-grid" id="clientRequestForm">
+              <div class="field">
+                <label for="requestType">نوع الطلب</label>
+                <select id="requestType">
+                  <option value="meeting">طلب موعد</option>
+                  <option value="task">طلب مهمة عامة</option>
+                  <option value="question">استفسار</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="requestTime">الوقت المفضل</label>
+                <input id="requestTime" type="datetime-local">
+              </div>
+              <div class="field full">
+                <label for="requestText">تفاصيل الطلب</label>
+                <textarea id="requestText" placeholder="اكتب طلبك بشكل عام، وسيقوم المسؤول بمراجعته وتحديد التفاصيل." required></textarea>
+              </div>
+              <div class="field full">
+                <button class="primary" type="submit">إرسال الطلب للمسؤول</button>
+              </div>
+            </form>
+          </div>
+          <div class="card pad">
+            <h2>طلبات الزبائن</h2>
+            <div class="deal-log" id="clientRequestList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="automation">
+        <div class="heading">
+          <div>
+            <h1>Workflow automation</h1>
+            <p>Rules that assign owners, send reminders, move cards, and generate recurring production tasks.</p>
+          </div>
+          <button class="primary" id="createRuleBtn" type="button">Create rule</button>
+        </div>
+        <div class="automation">
+          <div class="rule"><button class="toggle on" type="button"><span></span></button><div><strong>Auto-assign design tasks</strong><br><small class="muted">When stage becomes Design, assign the available designer.</small></div><span class="tag green">Active</span></div>
+          <div class="rule"><button class="toggle on" type="button"><span></span></button><div><strong>Deadline reminders</strong><br><small class="muted">Notify assignee 48 hours and 4 hours before due date.</small></div><span class="tag green">Active</span></div>
+          <div class="rule"><button class="toggle" type="button"><span></span></button><div><strong>Move after approval</strong><br><small class="muted">Move cards from Review to Delivery when client approval is recorded.</small></div><span class="tag amber">Paused</span></div>
+        </div>
+      </section>
+
+      <section class="page" id="ai">
+        <div class="heading">
+          <div>
+            <h1>AI productivity assistant</h1>
+            <p>Generate ad copy, hooks, campaign plans, risk insights, and content calendars.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card pad ai-box">
+            <h2>Campaign generator</h2>
+            <textarea id="aiPrompt">Create three launch hooks for a premium fitness studio targeting busy founders.</textarea>
+            <button class="primary" id="aiBtn" type="button">Generate ideas</button>
+          </div>
+          <div class="card pad">
+            <h2>Output</h2>
+            <div class="output" id="aiOutput">Ready when you are. The production version would call an AI service through a secured NestJS endpoint with audit logs and rate limits.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="architecture">
+        <div class="heading">
+          <div>
+            <h1>Production architecture</h1>
+            <p>The implementation blueprint for the full Next.js, NestJS, PostgreSQL, Prisma, Redis, Socket.IO, Cloudinary, and Vercel/Railway stack.</p>
+          </div>
+        </div>
+        <div class="architecture">
+          <div class="card pad">
+            <h2>Folder structure</h2>
+            <code>apps/
+  web/                 Next.js, React, TypeScript, Tailwind
+  api/                 NestJS modules and gateways
+packages/
+  ui/                  shared components
+  config/              eslint, tsconfig, tailwind presets
+  types/               shared DTOs and contracts
+infra/
+  prisma/schema.prisma
+  docker-compose.yml
+  railway.json
+  vercel.json</code>
+          </div>
+          <div class="card pad">
+            <h2>Core modules</h2>
+            <code>AuthModule        JWT, refresh tokens, RBAC
+UsersModule       roles, teams, permissions
+ProjectsModule    projects, tasks, subtasks, logs
+CrmModule         clients, contacts, pipeline
+FilesModule       Cloudinary signed uploads
+RealtimeModule    Socket.IO rooms and events
+AutomationModule  rules, queues, scheduled jobs
+ReportsModule     exports, analytics, dashboards
+AiModule          copy, planning, insights</code>
+          </div>
+          <div class="card pad">
+            <h2>Prisma schema sketch</h2>
+            <code>User(id, name, email, role, passwordHash)
+Client(id, company, email, phone, industry, budget)
+Project(id, clientId, title, status, priority, dueDate)
+Task(id, projectId, columnId, title, assigneeId, dueDate)
+Comment(id, taskId, authorId, body, mentions)
+Attachment(id, projectId, url, type, version)
+Notification(id, userId, type, readAt)
+AuditLog(id, actorId, action, entity, metadata)</code>
+          </div>
+          <div class="card pad">
+            <h2>Realtime events</h2>
+            <code>project.updated
+task.created
+task.moved
+comment.created
+file.uploaded
+notification.created
+typing.started
+approval.completed
+
+Socket rooms:
+organization:{id}
+project:{id}
+client-portal:{projectId}</code>
+          </div>
+          <div class="card pad">
+            <h2>Security</h2>
+            <code>Rate limiting with Redis
+Argon2 password hashing
+JWT access tokens, rotating refresh tokens
+NestJS validation pipes and DTOs
+RBAC guards per route and gateway event
+Cloudinary signed upload presets
+Audit logs for sensitive actions
+Encrypted secrets and daily database backups</code>
+          </div>
+          <div class="card pad">
+            <h2>API routes</h2>
+            <code>POST /auth/login
+POST /auth/register
+GET  /dashboard/overview
+GET  /projects
+POST /projects/:id/tasks
+PATCH /tasks/:id/move
+GET  /clients
+POST /files/sign-upload
+GET  /reports/performance
+POST /ai/generate-copy</code>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="projectModal" aria-hidden="true">
+    <form class="modal-panel" id="projectForm">
+      <div class="modal-head">
+        <h2>إنشاء مشروع جديد</h2>
+        <button class="icon-btn" id="closeProjectModal" type="button">X</button>
+      </div>
+      <div class="modal-body form-grid">
+        <div class="field">
+          <label for="projectTitle">اسم المشروع</label>
+          <input id="projectTitle" required placeholder="حملة إطلاق جديدة">
+        </div>
+        <div class="field">
+          <label for="projectClient">الزبون الذي يختاره المسؤول</label>
+          <select id="projectClient" required></select>
+        </div>
+        <div class="field">
+          <label for="projectOwner">المتحكم/المسؤول</label>
+          <select id="projectOwner"></select>
+        </div>
+        <div class="field">
+          <label for="projectDue">تاريخ التسليم</label>
+          <input id="projectDue" type="date" required>
+        </div>
+        <div class="field">
+          <label for="projectBudget">قيمة الصفقة</label>
+          <input id="projectBudget" placeholder="$15k">
+        </div>
+        <div class="field">
+          <label for="projectPriority">الأولوية</label>
+          <select id="projectPriority">
+            <option>High</option>
+            <option>Medium</option>
+            <option>Normal</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="projectNotes">تفاصيل أولية</label>
+          <textarea id="projectNotes" placeholder="الأهداف، نطاق العمل، أول موعد كلام، وأي شرط مهم"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" id="cancelProjectModal" type="button">إلغاء</button>
+        <button class="primary" type="submit">حفظ المشروع</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal" id="meetingModal" aria-hidden="true">
+    <form class="modal-panel" id="meetingForm">
+      <div class="modal-head">
+        <h2>جدولة كلام مع الزبون</h2>
+        <button class="icon-btn" id="closeMeetingModal" type="button">X</button>
+      </div>
+      <div class="modal-body form-grid">
+        <div class="field">
+          <label for="meetingTitle">عنوان الموعد</label>
+          <input id="meetingTitle" required placeholder="مراجعة العرض">
+        </div>
+        <div class="field">
+          <label for="meetingClient">الزبون</label>
+          <select id="meetingClient" required></select>
+        </div>
+        <div class="field">
+          <label for="meetingTime">التاريخ والوقت</label>
+          <input id="meetingTime" type="datetime-local" required>
+        </div>
+        <div class="field">
+          <label for="meetingOwner">المتحكم</label>
+          <select id="meetingOwner"></select>
+        </div>
+        <div class="field full">
+          <label for="meetingNotes">ملاحظات الموعد</label>
+          <textarea id="meetingNotes" placeholder="ما الذي يجب تحضيره؟"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" id="cancelMeetingModal" type="button">إلغاء</button>
+        <button class="primary" type="submit">حفظ الموعد</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast"><strong>تحديث مباشر</strong><p id="toastText">تمت مزامنة اللوحة بنجاح.</p></div>
+
+  <script>
+    const qs = (selector) => document.querySelector(selector);
+    const qsa = (selector) => Array.from(document.querySelectorAll(selector));
+    const storageKey = 'agencyos-ar-interactive-v1';
+
+    const pages = qsa('.page');
+    const navButtons = qsa('[data-page]');
+    const authScreen = qs('#authScreen');
+    const adminLoginForm = qs('#adminLoginForm');
+    const clientLoginForm = qs('#clientLoginForm');
+    const loginAdmin = qs('#loginAdmin');
+    const roleBadge = qs('#roleBadge');
+    const logoutBtn = qs('#logoutBtn');
+    const toast = qs('#toast');
+    const toastText = qs('#toastText');
+    const board = qs('#board');
+    const addCardBtn = qs('#addCard');
+    const addColumnBtn = qs('#addColumn');
+    const themeBtn = qs('#themeBtn');
+    const notifyBtn = qs('#notifyBtn');
+    const langBtn = qs('#langBtn');
+    const newProjectBtn = qs('#newProjectBtn');
+    const approveBtn = qs('#approveBtn');
+    const aiBtn = qs('#aiBtn');
+    const aiPrompt = qs('#aiPrompt');
+    const aiOutput = qs('#aiOutput');
+    const searchInput = qs('#search');
+    const projectModal = qs('#projectModal');
+    const projectForm = qs('#projectForm');
+    const projectClient = qs('#projectClient');
+    const projectOwner = qs('#projectOwner');
+    const meetingModal = qs('#meetingModal');
+    const meetingForm = qs('#meetingForm');
+    const meetingOwner = qs('#meetingOwner');
+    const projectsTableBody = qs('#projectsTableBody');
+    const pipelineBody = qs('#pipelineBody');
+    const clientProfile = qs('#clientProfile');
+    const clientForm = qs('#clientForm');
+    const dealLog = qs('#dealLog');
+    const dealForm = qs('#dealForm');
+    const dealClient = qs('#dealClient');
+    const meetingClient = qs('#meetingClient');
+    const calendarGrid = qs('#calendarGrid');
+    const messageList = qs('#messageList');
+    const messageForm = qs('#messageForm');
+    const clientRequestForm = qs('#clientRequestForm');
+    const clientRequestList = qs('#clientRequestList');
+    const sidebarTeam = qs('#sidebarTeam');
+    const adminList = qs('#adminList');
+    const adminForm = qs('#adminForm');
+    const activeAdminName = qs('#activeAdminName');
+    const adminCount = qs('#adminCount');
+    const assignedCount = qs('#assignedCount');
+
+    const defaultState = {
+      language: 'ar',
+      role: 'guest',
+      sessionName: '',
+      adminInviteCode: 'OWNER-2026',
+      currentAdminId: 'AM',
+      selectedClient: 'WaveBank',
+      admins: [
+        { id: 'AM', name: 'Ada Malik', role: 'مديرة مشاريع', initials: 'AM', color: '#111827', work: 'إدارة العملاء، توزيع المهام، ومتابعة الصفقات.' },
+        { id: 'DK', name: 'Dami King', role: 'مصمم', initials: 'DK', color: '#0f9f6e', work: 'تنفيذ التصاميم وتجهيز الملفات للمراجعة.' },
+        { id: 'LS', name: 'Lena Stone', role: 'قائدة محتوى', initials: 'LS', color: '#7c3aed', work: 'إدارة المحتوى، الجداول، والتسليمات النصية.' }
+      ],
+      columns: ['New Lead', 'First Meeting', 'Planning', 'Strategy', 'Design', 'Content Creation', 'Campaign Launch', 'Review', 'Revisions', 'Delivery', 'Archived'],
+      tasks: [
+        { column: 'New Lead', title: 'Orbit Telecom funnel audit', client: 'Orbit Telecom', tags: ['CRM', 'High'], due: 'Jun 24', owner: 'AM' },
+        { column: 'Planning', title: 'FitLab launch workback plan', client: 'FitLab', tags: ['Kickoff', 'Medium'], due: 'Jun 12', owner: 'DK' },
+        { column: 'Strategy', title: 'WaveBank positioning brief', client: 'WaveBank', tags: ['Strategy'], due: 'Jun 05', owner: 'AM' },
+        { column: 'Design', title: 'Landing page visual system', client: 'WaveBank', tags: ['Design', 'High'], due: 'Jun 08', owner: 'DK' },
+        { column: 'Content Creation', title: 'NovaBites 30-day content calendar', client: 'NovaBites', tags: ['Content'], due: 'Jun 19', owner: 'LS' },
+        { column: 'Review', title: 'Executive campaign deck', client: 'WaveBank', tags: ['Approval'], due: 'Jun 05', owner: 'AM' },
+        { column: 'Delivery', title: 'FitLab paid social package', client: 'FitLab', tags: ['Launch'], due: 'Jun 14', owner: 'LS' }
+      ],
+      clients: [
+        { company: 'WaveBank', industry: 'Finance', budget: '$42k', stage: 'Won', email: 'finance@wavebank.example', phone: '+1 415 555 0198' },
+        { company: 'FitLab', industry: 'Fitness', budget: '$28k', stage: 'Negotiation', email: 'hello@fitlab.example', phone: '+1 415 555 0144' },
+        { company: 'Orbit Telecom', industry: 'Telecom', budget: '$64k', stage: 'Proposal Sent', email: 'growth@orbit.example', phone: '+1 415 555 0177' },
+        { company: 'NovaBites', industry: 'Food', budget: '$19k', stage: 'Interested', email: 'team@novabites.example', phone: '+1 415 555 0120' }
+      ],
+      meetings: [
+        { title: 'Kickoff', client: 'FitLab', time: '2026-06-01T10:30', owner: 'Dami King', notes: 'Start delivery plan.' },
+        { title: 'Review', client: 'WaveBank', time: '2026-06-03T13:00', owner: 'Ada Malik', notes: 'Review creative direction.' }
+      ],
+      dealLogs: [
+        { client: 'WaveBank', time: '2026-05-29T11:00', amount: '$42k', stage: 'Won', notes: 'تم الاتفاق على تسليم الحزمة النهائية بعد اعتماد التصميم.' }
+      ],
+      messages: [
+        { role: 'client', time: '2026-05-29T10:20', text: 'هل يمكن تقوية زر الدعوة لاتخاذ إجراء؟' },
+        { role: 'manager', time: '2026-05-29T10:38', text: 'تم تحديث النسخة، وسنرسل رابط المعاينة اليوم.' }
+      ],
+      clientRequests: [
+        { type: 'meeting', client: 'WaveBank', time: '2026-05-29T14:00', text: 'طلب مراجعة عامة قبل التسليم النهائي.', status: 'جديد' }
+      ],
+      draggedTask: null
+    };
+
+    const state = { ...defaultState, ...JSON.parse(localStorage.getItem(storageKey) || '{}') };
+    state.admins = state.admins?.length ? state.admins : defaultState.admins;
+    state.currentAdminId = state.currentAdminId || state.admins[0].id;
+    state.selectedClient = state.selectedClient || state.clients?.[0]?.company;
+    state.clientRequests = state.clientRequests || [];
+    state.adminInviteCode = state.adminInviteCode || 'OWNER-2026';
+    state.role = 'guest';
+    state.sessionName = '';
+
+    const translations = {
+      ar: {
+        brandSubtitle: 'منصة إدارة الوكالات',
+        navDashboard: 'لوحة التحكم',
+        navKanban: 'سير العمل',
+        navProjects: 'المشاريع',
+        navCrm: 'العملاء والصفقات',
+        navAdmins: 'المسؤولون',
+        navCalendar: 'المواعيد',
+        navFiles: 'الملفات',
+        navClient: 'بوابة الزبون',
+        navAutomation: 'الأتمتة',
+        navAi: 'المساعد الذكي',
+        navArchitecture: 'البنية التقنية',
+        onlineTeam: 'الفريق المتصل',
+        newProject: '+ مشروع جديد',
+        searchPlaceholder: 'ابحث في المشاريع والعملاء والملفات والمهام'
+      },
+      en: {
+        brandSubtitle: 'Creative operations suite',
+        navDashboard: 'Dashboard',
+        navKanban: 'Kanban',
+        navProjects: 'Projects',
+        navCrm: 'CRM',
+        navAdmins: 'Admins',
+        navCalendar: 'Meetings',
+        navFiles: 'Files',
+        navClient: 'Client Portal',
+        navAutomation: 'Automation',
+        navAi: 'AI Assistant',
+        navArchitecture: 'Architecture',
+        onlineTeam: 'Online team',
+        newProject: '+ New project',
+        searchPlaceholder: 'Search projects, clients, files, tasks'
+      }
+    };
+
+    const saveState = () => {
+      const { draggedTask, role, sessionName, ...saved } = state;
+      localStorage.setItem(storageKey, JSON.stringify(saved));
+    };
+
+    const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+
+    const formatDateTime = (value) => {
+      if (!value) return '-';
+      return new Intl.DateTimeFormat(state.language === 'ar' ? 'ar' : 'en', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      }).format(new Date(value));
+    };
+
+    const tagClass = (tag) => {
+      if (tag === 'High' || tag === 'Lost') return 'red';
+      if (tag === 'Medium' || tag === 'Approval' || tag === 'Negotiation') return 'amber';
+      if (tag === 'Launch' || tag === 'Content' || tag === 'Won') return 'green';
+      return 'blue';
+    };
+
+    const getAdmin = (idOrName) => {
+      return state.admins.find((admin) => admin.id === idOrName || admin.name === idOrName || admin.initials === idOrName) || state.admins[0];
+    };
+
+    const currentAdmin = () => getAdmin(state.currentAdminId);
+
+    const adminOptions = (selectedId = state.currentAdminId) => {
+      return state.admins.map((admin) => `<option value="${escapeHtml(admin.id)}" ${admin.id === selectedId ? 'selected' : ''}>${escapeHtml(admin.name)} - ${escapeHtml(admin.role)}</option>`).join('');
+    };
+
+    const clientOptions = (selectedCompany = state.clients[0]?.company) => {
+      return state.clients.map((client) => `<option value="${escapeHtml(client.company)}" ${client.company === selectedCompany ? 'selected' : ''}>${escapeHtml(client.company)} - ${escapeHtml(client.stage)}</option>`).join('');
+    };
+
+    const renderLoginAdmins = () => {
+      loginAdmin.innerHTML = state.admins.map((admin) => `<option value="${escapeHtml(admin.id)}">${escapeHtml(admin.name)} - ${escapeHtml(admin.role)}</option>`).join('');
+      loginAdmin.value = state.currentAdminId;
+    };
+
+    const canUseAdminTools = () => state.role === 'admin';
+
+    const applyAccess = () => {
+      document.body.dataset.role = state.role;
+      authScreen.classList.toggle('hidden', state.role !== 'guest');
+      const active = currentAdmin();
+      roleBadge.textContent = state.role === 'admin'
+        ? `مسؤول: ${active.name}`
+        : state.role === 'client'
+          ? `زبون: ${state.sessionName || 'مستخدم'}`
+          : 'غير مسجل';
+
+      if (state.role === 'client') {
+        qs('#messageRole').value = 'client';
+        qs('#messageRole').disabled = true;
+        setActivePage('client');
+      } else {
+        qs('#messageRole').disabled = false;
+      }
+    };
+
+    const showToast = (message) => {
+      toastText.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove('show'), 2600);
+    };
+
+    const setActivePage = (pageId) => {
+      if (!canUseAdminTools() && pageId !== 'client') {
+        pageId = 'client';
+      }
+      navButtons.forEach((button) => button.classList.toggle('active', button.dataset.page === pageId));
+      pages.forEach((page) => page.classList.toggle('active', page.id === pageId));
+      document.querySelector(`#${pageId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    const setLanguage = (language) => {
+      state.language = language;
+      document.documentElement.lang = language;
+      document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+      langBtn.textContent = language === 'ar' ? 'EN' : 'AR';
+      qsa('[data-i18n]').forEach((el) => {
+        el.textContent = translations[language][el.dataset.i18n] || el.textContent;
+      });
+      qsa('[data-i18n-placeholder]').forEach((el) => {
+        el.placeholder = translations[language][el.dataset.i18nPlaceholder] || el.placeholder;
+      });
+      renderAll();
+      saveState();
+    };
+
+    const openModal = (modal) => {
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+      modal.querySelector('input, select, textarea')?.focus();
+    };
+
+    const closeModal = (modal) => {
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    const createTaskCard = (task) => {
+      const owner = getAdmin(task.owner);
+      const card = document.createElement('article');
+      card.className = 'task';
+      card.draggable = true;
+      card.dataset.title = task.title;
+      card.innerHTML = `
+        <h3>${escapeHtml(task.title)}</h3>
+        <small class="muted">${escapeHtml(task.client)}</small>
+        <div class="tags">${task.tags.map((tag) => `<span class="tag ${tagClass(tag)}">${escapeHtml(tag)}</span>`).join('')}</div>
+        <div class="task-footer"><span>${escapeHtml(task.due)}</span><span class="avatar" title="${escapeHtml(owner.name)}" style="width:24px;height:24px;font-size:10px;background:${escapeHtml(owner.color)}">${escapeHtml(owner.initials)}</span></div>
+      `;
+
+      card.addEventListener('dragstart', () => {
+        card.classList.add('dragging');
+        state.draggedTask = task;
+      });
+
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        state.draggedTask = null;
+      });
+
+      return card;
+    };
+
+    const renderBoard = () => {
+      board.innerHTML = '';
+      state.columns.forEach((column) => {
+        const columnTasks = state.tasks.filter((task) => task.column === column);
+        const columnEl = document.createElement('section');
+        columnEl.className = 'column';
+        columnEl.dataset.column = column;
+        columnEl.innerHTML = `<header draggable="true"><strong>${escapeHtml(column)}</strong><span class="count">${columnTasks.length}</span></header>`;
+
+        columnTasks.forEach((task) => columnEl.appendChild(createTaskCard(task)));
+        columnEl.addEventListener('dragover', (event) => {
+          event.preventDefault();
+          columnEl.classList.add('over');
+        });
+        columnEl.addEventListener('dragleave', () => columnEl.classList.remove('over'));
+        columnEl.addEventListener('drop', () => {
+          columnEl.classList.remove('over');
+          if (!state.draggedTask) return;
+          state.draggedTask.column = column;
+          saveState();
+          renderBoard();
+          showToast(`تم نقل "${state.draggedTask.title}" إلى ${column}`);
+        });
+        board.appendChild(columnEl);
+      });
+    };
+
+    const renderProjects = () => {
+      projectsTableBody.innerHTML = state.tasks.slice(0, 12).map((task) => `
+        <tr>
+          <td>${escapeHtml(task.title)}</td>
+          <td>${escapeHtml(getAdmin(task.owner).name)}</td>
+          <td><span class="tag blue">${escapeHtml(task.column)}</span></td>
+          <td><div class="progress"><span style="width:${task.column === 'Delivery' ? 96 : 48}%"></span></div></td>
+          <td>${escapeHtml(task.due)}</td>
+          <td><span class="tag ${tagClass(task.tags[task.tags.length - 1])}">${escapeHtml(task.tags[task.tags.length - 1] || 'Normal')}</span></td>
+        </tr>
+      `).join('');
+    };
+
+    const renderClients = () => {
+      pipelineBody.innerHTML = state.clients.map((client, index) => `
+        <tr data-client-index="${index}" style="cursor:pointer;${client.company === state.selectedClient ? 'background:color-mix(in srgb, var(--blue) 8%, transparent)' : ''}">
+          <td>${escapeHtml(client.company)}</td>
+          <td>${escapeHtml(client.industry)}</td>
+          <td>${escapeHtml(client.budget)}</td>
+          <td><span class="tag ${tagClass(client.stage)}">${escapeHtml(client.stage)}</span></td>
+        </tr>
+      `).join('');
+
+      const selected = state.clients.find((client) => client.company === state.selectedClient) || state.clients[0];
+      state.selectedClient = selected.company;
+      clientProfile.innerHTML = `
+        <p><strong>${escapeHtml(selected.company)}</strong><br>${escapeHtml(selected.email)}<br>${escapeHtml(selected.phone)}</p>
+        <div class="row"><span>آخر موعد</span><strong>${escapeHtml(state.meetings.find((meeting) => meeting.client === selected.company)?.title || 'غير محدد')}</strong></div>
+        <div class="row"><span>المرحلة</span><small>${escapeHtml(selected.stage)}</small></div>
+        <div class="row"><span>قيمة الصفقة</span><small>${escapeHtml(selected.budget)}</small></div>
+        <div class="row"><span>المسؤول الحالي</span><small>${escapeHtml(currentAdmin().name)}</small></div>
+      `;
+
+      const options = state.clients.map((client) => `<option>${escapeHtml(client.company)}</option>`).join('');
+      dealClient.innerHTML = options;
+      meetingClient.innerHTML = options;
+      projectClient.innerHTML = clientOptions(state.selectedClient);
+      projectOwner.innerHTML = adminOptions();
+      meetingOwner.innerHTML = adminOptions();
+    };
+
+    const renderAdmins = () => {
+      const active = currentAdmin();
+      qs('#ownerInviteCode').value = state.adminInviteCode;
+      sidebarTeam.innerHTML = state.admins.slice(0, 5).map((admin) => `
+        <div class="member">
+          <span class="avatar" style="background:${escapeHtml(admin.color)}">${escapeHtml(admin.initials)}</span>
+          <span>${escapeHtml(admin.name)}<br><small class="muted">${escapeHtml(admin.role)}</small></span>
+        </div>
+      `).join('');
+
+      adminList.innerHTML = state.admins.map((admin) => {
+        const assigned = state.tasks.filter((task) => getAdmin(task.owner).id === admin.id).length;
+        return `
+          <article class="admin-card ${admin.id === state.currentAdminId ? 'active' : ''}">
+            <span class="avatar" style="background:${escapeHtml(admin.color)}">${escapeHtml(admin.initials)}</span>
+            <div>
+              <strong>${escapeHtml(admin.name)}</strong><br>
+              <small class="muted">${escapeHtml(admin.role)} | ${assigned} مشروع</small>
+              <p>${escapeHtml(admin.work || 'لا توجد تفاصيل عمل بعد.')}</p>
+            </div>
+            <div class="inline-actions">
+              <button class="mini-btn" type="button" data-edit-admin="${escapeHtml(admin.id)}">تعديل</button>
+              <button class="mini-btn" type="button" data-current-admin="${escapeHtml(admin.id)}">اختيار</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      activeAdminName.textContent = `${active.name} - ${active.role}`;
+      adminCount.textContent = state.admins.length;
+      assignedCount.textContent = state.tasks.filter((task) => getAdmin(task.owner).id === active.id).length;
+      projectOwner.innerHTML = adminOptions();
+      meetingOwner.innerHTML = adminOptions();
+      renderLoginAdmins();
+    };
+
+    const renderDealLog = () => {
+      dealLog.innerHTML = state.dealLogs.slice().reverse().map((log) => `
+        <div class="log-item">
+          <strong>${escapeHtml(log.client)} - ${escapeHtml(log.amount || 'بدون قيمة')}</strong>
+          <small class="muted">${formatDateTime(log.time)} | ${escapeHtml(log.stage)}</small>
+          <p>${escapeHtml(log.notes)}</p>
+        </div>
+      `).join('');
+    };
+
+    const renderCalendar = () => {
+      calendarGrid.innerHTML = '';
+      const base = new Date();
+      base.setHours(0, 0, 0, 0);
+      for (let offset = 0; offset < 7; offset += 1) {
+        const date = new Date(base);
+        date.setDate(base.getDate() + offset);
+        const dateKey = date.toISOString().slice(0, 10);
+        const meetings = state.meetings.filter((meeting) => meeting.time?.slice(0, 10) === dateKey);
+        const dayEl = document.createElement('div');
+        dayEl.className = 'day';
+        dayEl.innerHTML = `<strong>${date.toLocaleDateString(state.language === 'ar' ? 'ar' : 'en', { weekday: 'short', day: 'numeric' })}</strong>${meetings.map((meeting) => `
+          <div class="meeting">${escapeHtml(meeting.title)} ${new Date(meeting.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}<br>${escapeHtml(meeting.client)}</div>
+        `).join('')}`;
+        calendarGrid.appendChild(dayEl);
+      }
+    };
+
+    const renderMessages = () => {
+      messageList.innerHTML = state.messages.slice().reverse().map((message) => `
+        <div class="message ${message.role}">
+          <strong>${message.role === 'client' ? 'الزبون' : 'المتحكم'}</strong>
+          <small class="muted">${formatDateTime(message.time)}</small>
+          <p>${escapeHtml(message.text)}</p>
+        </div>
+      `).join('');
+    };
+
+    const renderClientRequests = () => {
+      clientRequestList.innerHTML = state.clientRequests.slice().reverse().map((request) => `
+        <div class="log-item">
+          <strong>${request.type === 'meeting' ? 'طلب موعد' : request.type === 'task' ? 'طلب مهمة عامة' : 'استفسار'} - ${escapeHtml(request.client)}</strong>
+          <small class="muted">${request.time ? formatDateTime(request.time) : 'بدون وقت محدد'} | ${escapeHtml(request.status)}</small>
+          <p>${escapeHtml(request.text)}</p>
+        </div>
+      `).join('') || '<p>لا توجد طلبات حتى الآن.</p>';
+    };
+
+    const renderAll = () => {
+      renderBoard();
+      renderProjects();
+      renderClients();
+      renderAdmins();
+      renderDealLog();
+      renderCalendar();
+      renderMessages();
+      renderClientRequests();
+      renderLoginAdmins();
+      applyAccess();
+    };
+
+    const updateToggleState = (button) => {
+      button.addEventListener('click', () => {
+        button.classList.toggle('on');
+        showToast(button.classList.contains('on') ? 'تم تفعيل قاعدة الأتمتة.' : 'تم إيقاف قاعدة الأتمتة.');
+      });
+    };
+
+    const filterSearch = (query) => {
+      const normalized = query.trim().toLowerCase();
+      const targets = [...document.querySelectorAll('table tbody tr'), ...document.querySelectorAll('.task'), ...document.querySelectorAll('.files .card'), ...document.querySelectorAll('.log-item, .message')];
+      targets.forEach((item) => {
+        item.style.display = item.textContent.toLowerCase().includes(normalized) ? '' : 'none';
+      });
+    };
+
+    qsa('[data-auth-tab]').forEach((button) => {
+      button.addEventListener('click', () => {
+        qsa('[data-auth-tab]').forEach((tab) => tab.classList.toggle('active', tab === button));
+        adminLoginForm.classList.toggle('active', button.dataset.authTab === 'admin');
+        clientLoginForm.classList.toggle('active', button.dataset.authTab === 'client');
+      });
+    });
+
+    adminLoginForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const code = qs('#adminInviteCode').value.trim();
+      if (code !== state.adminInviteCode) {
+        showToast('كود الإذن غير صحيح. لا يمكن دخول لوحة المسؤول.');
+        return;
+      }
+      state.role = 'admin';
+      state.currentAdminId = loginAdmin.value;
+      state.sessionName = currentAdmin().name;
+      saveState();
+      renderAll();
+      setActivePage('dashboard');
+      showToast('تم دخول لوحة الإدارة.');
+    });
+
+    clientLoginForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      state.role = 'client';
+      state.sessionName = qs('#clientLoginName').value.trim();
+      const company = qs('#clientLoginCompany').value.trim();
+      if (company) state.selectedClient = company;
+      saveState();
+      renderAll();
+      setActivePage('client');
+      showToast('تم دخول بوابة الزبون.');
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      state.role = 'guest';
+      state.sessionName = '';
+      saveState();
+      applyAccess();
+      showToast('تم تسجيل الخروج.');
+    });
+
+    qsa('.segmented button').forEach((button) => {
+      button.addEventListener('click', () => {
+        qsa('.segmented button').forEach((item) => item.classList.toggle('active', item === button));
+        showToast(`تم تطبيق فلتر: ${button.textContent.trim()}`);
+      });
+    });
+
+    qs('#exportReportBtn')?.addEventListener('click', () => showToast('تم تجهيز التقرير المحلي للمعاينة.'));
+    qs('#openRisksBtn')?.addEventListener('click', () => setActivePage('kanban'));
+    qs('#uploadBtn')?.addEventListener('click', () => showToast('رفع الملفات يحتاج ربط تخزين فعلي لاحقًا. تم تسجيل الطلب.'));
+    qs('#sharePortalBtn')?.addEventListener('click', () => showToast('تم تجهيز رابط بوابة الزبون للنسخ.'));
+    qs('#createRuleBtn')?.addEventListener('click', () => showToast('تم إنشاء مسودة قاعدة أتمتة.'));
+
+    navButtons.forEach((button) => button.addEventListener('click', () => setActivePage(button.dataset.page)));
+    qsa('#closeProjectModal, #cancelProjectModal').forEach((button) => button.addEventListener('click', () => closeModal(projectModal)));
+    qsa('#closeMeetingModal, #cancelMeetingModal').forEach((button) => button.addEventListener('click', () => closeModal(meetingModal)));
+    pipelineBody.addEventListener('click', (event) => {
+      const row = event.target.closest('tr[data-client-index]');
+      if (!row) return;
+      const client = state.clients[Number(row.dataset.clientIndex)];
+      state.selectedClient = client.company;
+      saveState();
+      renderClients();
+      showToast(`تم اختيار الزبون ${client.company}.`);
+    });
+
+    themeBtn.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      showToast(next === 'dark' ? 'تم تفعيل الوضع الداكن' : 'تم تفعيل الوضع الفاتح');
+    });
+
+    langBtn.addEventListener('click', () => setLanguage(state.language === 'ar' ? 'en' : 'ar'));
+    notifyBtn.addEventListener('click', () => showToast('لديك 5 تنبيهات: تعليقات، مواعيد تسليم، واعتمادات زبائن.'));
+    newProjectBtn.addEventListener('click', () => openModal(projectModal));
+    qs('#scheduleMeetingBtn')?.addEventListener('click', () => openModal(meetingModal));
+    qs('#addClientBtn')?.addEventListener('click', () => {
+      setActivePage('crm');
+      qs('#clientCompany')?.focus();
+    });
+    qs('#createTaskBtn')?.addEventListener('click', () => openModal(projectModal));
+    qs('#resetAdminForm')?.addEventListener('click', () => {
+      adminForm.reset();
+      qs('#adminId').value = '';
+      qs('#adminColor').value = '#2563eb';
+      qs('#adminName').focus();
+    });
+
+    adminList.addEventListener('click', (event) => {
+      const editId = event.target.dataset.editAdmin;
+      const currentId = event.target.dataset.currentAdmin;
+      if (editId) {
+        const admin = getAdmin(editId);
+        qs('#adminId').value = admin.id;
+        qs('#adminName').value = admin.name;
+        qs('#adminRole').value = admin.role;
+        qs('#adminInitials').value = admin.initials;
+        qs('#adminColor').value = admin.color;
+        qs('#adminWork').value = admin.work || '';
+      }
+      if (currentId) {
+        state.currentAdminId = currentId;
+        saveState();
+        renderAll();
+        showToast('تم تغيير المسؤول الحالي.');
+      }
+    });
+
+    qs('#setCurrentAdmin')?.addEventListener('click', () => {
+      const adminId = qs('#adminId').value || state.currentAdminId;
+      state.currentAdminId = adminId;
+      saveState();
+      renderAll();
+      showToast('تم اعتماد هذا المسؤول كمسؤول حالي.');
+    });
+
+    adminForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!canUseAdminTools()) {
+        showToast('هذه الخانة للمسؤول فقط.');
+        return;
+      }
+      const existingId = qs('#adminId').value;
+      const initials = qs('#adminInitials').value.trim().toUpperCase();
+      state.adminInviteCode = qs('#ownerInviteCode').value.trim() || state.adminInviteCode;
+      const admin = {
+        id: existingId || `${initials}${Date.now().toString().slice(-3)}`,
+        name: qs('#adminName').value.trim(),
+        role: qs('#adminRole').value.trim(),
+        initials,
+        color: qs('#adminColor').value,
+        work: qs('#adminWork').value.trim()
+      };
+
+      const index = state.admins.findIndex((item) => item.id === admin.id);
+      if (index >= 0) {
+        state.admins[index] = admin;
+      } else {
+        state.admins.push(admin);
+        state.currentAdminId = admin.id;
+      }
+
+      saveState();
+      renderAll();
+      adminForm.reset();
+      qs('#adminId').value = '';
+      showToast('تم حفظ بيانات المسؤول.');
+    });
+
+    clientForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!canUseAdminTools()) {
+        showToast('تسجيل الزبائن من صلاحيات المسؤول فقط.');
+        return;
+      }
+      const company = qs('#clientCompany').value.trim();
+      const existing = state.clients.find((client) => client.company.toLowerCase() === company.toLowerCase());
+      const client = {
+        company,
+        industry: qs('#clientIndustry').value.trim(),
+        budget: qs('#clientBudget').value.trim() || '$0',
+        stage: qs('#clientStage').value,
+        email: qs('#clientEmail').value.trim() || `${company.toLowerCase().replace(/\s+/g, '')}@example.com`,
+        phone: qs('#clientPhone').value.trim() || 'غير محدد'
+      };
+
+      if (existing) {
+        Object.assign(existing, client);
+      } else {
+        state.clients.unshift(client);
+      }
+      state.selectedClient = company;
+
+      state.dealLogs.push({
+        client: company,
+        time: new Date().toISOString().slice(0, 16),
+        amount: client.budget,
+        stage: client.stage,
+        notes: `تم تسجيل الزبون بواسطة ${currentAdmin().name}.`
+      });
+      saveState();
+      renderAll();
+      clientForm.reset();
+      showToast('تم حفظ الزبون وأصبح متاحًا للاختيار في المشاريع والمواعيد.');
+    });
+
+    projectForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!canUseAdminTools()) {
+        showToast('إنشاء المشاريع من صلاحيات المسؤول فقط.');
+        return;
+      }
+      const title = qs('#projectTitle').value.trim();
+      const client = qs('#projectClient').value;
+      const owner = qs('#projectOwner').value;
+      const due = qs('#projectDue').value;
+      const budget = qs('#projectBudget').value.trim() || '$0';
+      const priority = qs('#projectPriority').value;
+      const notes = qs('#projectNotes').value.trim();
+      const dueLabel = due ? new Date(due).toLocaleDateString('en', { month: 'short', day: '2-digit' }) : 'No due';
+
+      state.tasks.unshift({ column: 'New Lead', title, client, tags: ['CRM', priority], due: dueLabel, owner });
+      const selectedClientRecord = state.clients.find((item) => item.company === client);
+      if (selectedClientRecord) {
+        selectedClientRecord.budget = budget;
+        selectedClientRecord.stage = 'Lead';
+      }
+      state.selectedClient = client;
+      state.dealLogs.push({ client, time: new Date().toISOString().slice(0, 16), amount: budget, stage: 'Lead', notes: notes || 'تم إنشاء مشروع جديد وفتح صفقة مبدئية.' });
+      saveState();
+      renderAll();
+      closeModal(projectModal);
+      projectForm.reset();
+      setActivePage('projects');
+      showToast('تم إنشاء المشروع وحفظ تفاصيل الصفقة.');
+    });
+
+    meetingForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!canUseAdminTools()) {
+        showToast('جدولة المواعيد من لوحة الإدارة فقط. استخدم طلب الموعد في بوابة الزبون.');
+        return;
+      }
+      state.meetings.push({
+        title: qs('#meetingTitle').value.trim(),
+        client: qs('#meetingClient').value,
+        time: qs('#meetingTime').value,
+        owner: qs('#meetingOwner').value,
+        notes: qs('#meetingNotes').value.trim()
+      });
+      saveState();
+      renderAll();
+      closeModal(meetingModal);
+      meetingForm.reset();
+      setActivePage('calendar');
+      showToast('تم حفظ موعد الكلام في التقويم.');
+    });
+
+    dealForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!canUseAdminTools()) {
+        showToast('تفاصيل الصفقة من صلاحيات المسؤول فقط.');
+        return;
+      }
+      const entry = {
+        client: qs('#dealClient').value,
+        time: qs('#dealTime').value,
+        amount: qs('#dealAmount').value.trim(),
+        stage: qs('#dealStage').value,
+        notes: qs('#dealNotes').value.trim()
+      };
+      state.dealLogs.push(entry);
+      const client = state.clients.find((item) => item.company === entry.client);
+      if (client) {
+        client.stage = entry.stage;
+        if (entry.amount) client.budget = entry.amount;
+      }
+      saveState();
+      renderAll();
+      dealForm.reset();
+      showToast('تم حفظ وقت الكلام وتفاصيل الصفقة.');
+    });
+
+    messageForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const role = canUseAdminTools() ? qs('#messageRole').value : 'client';
+      state.messages.push({
+        role,
+        time: qs('#messageTime').value,
+        text: qs('#messageText').value.trim()
+      });
+      saveState();
+      renderMessages();
+      messageForm.reset();
+      showToast('تم حفظ الرسالة في سجل التفاعل.');
+    });
+
+    clientRequestForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const type = qs('#requestType').value;
+      const client = state.sessionName || state.selectedClient || 'زبون';
+      const time = qs('#requestTime').value;
+      const text = qs('#requestText').value.trim();
+      state.clientRequests.push({ type, client, time, text, status: 'جديد' });
+      if (type === 'meeting' && time) {
+        state.meetings.push({
+          title: 'طلب موعد من الزبون',
+          client,
+          time,
+          owner: state.currentAdminId,
+          notes: text
+        });
+      }
+      if (type === 'task') {
+        state.tasks.unshift({
+          column: 'New Lead',
+          title: 'طلب مهمة عامة من الزبون',
+          client,
+          tags: ['Client Request', 'Normal'],
+          due: time ? new Date(time).toLocaleDateString('en', { month: 'short', day: '2-digit' }) : 'No due',
+          owner: state.currentAdminId
+        });
+      }
+      saveState();
+      renderAll();
+      clientRequestForm.reset();
+      showToast('تم إرسال الطلب للمسؤول.');
+    });
+
+    addCardBtn.addEventListener('click', () => {
+      if (!canUseAdminTools()) return;
+      state.tasks.unshift({ column: 'New Lead', title: 'New campaign discovery', client: 'New Client', tags: ['CRM'], due: 'Jun 30', owner: state.currentAdminId });
+      saveState();
+      renderAll();
+      showToast('تمت إضافة بطاقة جديدة إلى اللوحة.');
+    });
+
+    addColumnBtn.addEventListener('click', () => {
+      if (!canUseAdminTools()) return;
+      const name = `Custom Stage ${state.columns.length - 9}`;
+      state.columns.splice(state.columns.length - 1, 0, name);
+      saveState();
+      renderBoard();
+      showToast(`تمت إضافة مرحلة ${name}.`);
+    });
+
+    approveBtn.addEventListener('click', () => {
+      if (!canUseAdminTools()) {
+        showToast('اعتماد التصميم النهائي من صلاحيات المسؤول.');
+        return;
+      }
+      state.dealLogs.push({ client: 'WaveBank', time: new Date().toISOString().slice(0, 16), amount: '$42k', stage: 'Won', notes: 'تم تسجيل اعتماد الزبون من بوابة العميل.' });
+      saveState();
+      renderDealLog();
+      showToast('تم تسجيل اعتماد الزبون ومتابعة التسليم.');
+    });
+
+    aiBtn.addEventListener('click', () => {
+      const prompt = aiPrompt.value.trim() || 'Campaign brief';
+      aiOutput.innerHTML = `
+        <strong>Generated from brief:</strong> ${escapeHtml(prompt)}<br><br>
+        1. استعد ساعة تدريبك: تدريب فاخر يناسب جدول المؤسسين.<br>
+        2. لياقة عالية الأداء لأيام العمل الثقيلة.<br>
+        3. تدرب بدقة، استعد بوعي، وقد بطاقة أعلى.<br><br>
+        الخطوة التالية: تحويل أقوى فكرة إلى خطة اختبار إعلاني.
+      `;
+      showToast('تم توليد أفكار الحملة.');
+    });
+
+    searchInput.addEventListener('input', (event) => filterSearch(event.target.value));
+    qsa('.toggle').forEach(updateToggleState);
+    setLanguage(state.language || 'ar');
+  </script>
+</body>
+</html>
